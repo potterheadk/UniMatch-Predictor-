@@ -11,6 +11,11 @@ before proceding further install python3 and pip and install
 sudo pacman -S python3
 sudo pacman -S pip
 ```
+#### create Python virtual environment
+```conf
+python -m venv myenv
+source myenv/bin/activate
+```
 ```conf
 pip install -r requirement.txt
 ```
