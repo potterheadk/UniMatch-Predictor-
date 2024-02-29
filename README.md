@@ -5,6 +5,12 @@ UniMatch-Predictor uses ML to predict university admission chances based on CGPA
 
 # Requirement
 before proceding further install python3 and pip and install
+### For Linux
+#### arch linux
+```conf
+sudo pacman -S python3
+sudo pacman -S pip
+```
 ```conf
 pip install -r requirement.txt
 ```
