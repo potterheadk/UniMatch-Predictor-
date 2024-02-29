@@ -16,6 +16,7 @@ sudo pacman -S pip
 python -m venv myenv
 source myenv/bin/activate
 ```
+#### Install Project Dependencies
 ```conf
 pip install -r requirement.txt
 ```
