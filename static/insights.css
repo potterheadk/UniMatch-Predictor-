@@ -9,43 +9,71 @@ body {
     font-family: "Josefin Sans", sans-serif;
 }
 
-.header {
+.header{
+    
     display: flex;
     justify-content: space-between;
+    height: 10vh;
+    width: 100%;
+    /* border: 2px solid red; */
     align-items: center;
-    padding: 20px;
 
-    color: #fff; /* text color */
 }
 
-.logo {
-    font-size: 40px;
-    color: #fff;
+.logo{
+    margin-top: 50px;
+
+    padding: 3%;
+    font-size: 50px;
+    color: rgb(255, 242, 222);
     text-decoration: none;
-    font-weight: 600;
+    font-family: "Josefin Sans", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 600;
+
+
 }
 
-.logo span {
+.logo span{
     color: #44baff;
 }
 
-.nav {
+
+
+
+.nav{
+    margin-top: 50px;
     display: flex;
+    font-size: 28px;
+    font-weight: 400;
+    /* border: 2px solid red; */
+    align-items: center;
+    height: 8vh;
+
+    border-radius: 20px;
+
+    
 }
 
-.nav a {
+.nav a{
     text-decoration: none;
-    color: #fff;
+    color: rgb(255, 255, 255);
+    transition: 0.3s;
     padding: 5px 20px;
     margin-left: 20px;
-    font-weight: 600;
-    font-size: 24px;
+    transition: 0.3s;
+    font-family: "Josefin Sans", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 600;
 }
 
-.nav a:hover {
-    border-radius: 10px;
-    background-color: rgba(255, 255, 255, 0.1);
-    color: #00d0ef;
+
+.nav a:hover{
+    border: 2px solid rgb(0, 41, 82);
+    border-radius: 10px ;
+
+    color:  rgb(0, 208, 239);
+    
 }
 
 .container {
@@ -55,7 +83,7 @@ body {
     padding: 20px;
     
     /* background-color: rgba(255, 255, 255, 0.8); /* semi-transparent background */
-    border-radius: 10px; */
+    border-radius: 10px; 
 }
 
 h1 {

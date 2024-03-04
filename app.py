@@ -2,8 +2,28 @@ from flask import Flask, render_template, request, jsonify
 import pickle
 import numpy as np
 import pandas as pd
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.metrics.pairwise import cosine_similarity
+import docx2txt
 
 app = Flask(__name__)
+
+
+# Load the dataset
+df = pd.read_csv('Job_opportunities.csv')
+
+# Create TF-IDF vectorizer
+tfidf_vectorizer = TfidfVectorizer(stop_words='english')
+tfidf_matrix = tfidf_vectorizer.fit_transform(df['Job Description'])
+
+# Define allowed file types
+ALLOWED_EXTENSIONS = {'docx'}
+
+# Function to check file extensions
+def allowed_file(filename):
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
+
 
 # Load the trained model
 with open('model1.pkl', 'rb') as file:
@@ -11,7 +31,7 @@ with open('model1.pkl', 'rb') as file:
 
 
 # Read the dataset
-df = pd.read_csv("Filtered_Salary_data.csv")
+df1 = pd.read_csv("Filtered_Salary_data.csv")
 
 # Home route
 @app.route('/')
@@ -25,6 +45,19 @@ def form():
 @app.route('/insights')
 def index():
     return render_template('insights.html')
+
+# insights model 
+@app.route('/data')
+def get_data():
+    job_title = request.args.get('jobTitle')
+    filtered_df = df1[df1['Job Title'] == job_title]
+    data = {
+        'years_experience': filtered_df['Years of Experience'].tolist(),
+        'salary': filtered_df['Salary'].tolist()
+    }
+    return jsonify(data)
+
+
 
 
 # Prediction route
@@ -71,17 +104,59 @@ def predict():
     return render_template('result.html', prediction=prediction[0])
 
 
-# insights model 
 
-@app.route('/data')
-def get_data():
-    job_title = request.args.get('jobTitle')
-    filtered_df = df[df['Job Title'] == job_title]
-    data = {
-        'years_experience': filtered_df['Years of Experience'].tolist(),
-        'salary': filtered_df['Salary'].tolist()
-    }
-    return jsonify(data)
+# Create TF-IDF vectorizer
+tfidf_vectorizer = TfidfVectorizer(stop_words='english')
+tfidf_matrix = tfidf_vectorizer.fit_transform(df['Job Description'])
+
+# Define allowed file types
+ALLOWED_EXTENSIONS = {'docx'}
+
+# Function to check file extensions
+def allowed_file(filename):
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
+@app.route('/helper')
+def helper():
+    return render_template('helper.html')
+
+
+
+@app.route('/compare', methods=['POST'])
+def compare():
+    if request.method == 'POST':
+        # Check if both resume and job description files are present
+        if 'resume' not in request.files or 'job' not in request.files:
+            return render_template('helper.html', error='Please upload both resume and job description files.')
+
+        resume_file = request.files['resume']
+        job_file = request.files['job']
+
+        # Check if files are empty
+        if resume_file.filename == '' or job_file.filename == '':
+            return render_template('helper.html', error='Please upload non-empty files.')
+
+        # Check file extensions
+        if not (allowed_file(resume_file.filename) and allowed_file(job_file.filename)):
+            return render_template('helper.html', error='Only .docx files are allowed.')
+
+        resume_text = docx2txt.process(resume_file)
+        job_text = docx2txt.process(job_file)
+
+        resume_tfidf = tfidf_vectorizer.transform([resume_text])
+        job_tfidf = tfidf_vectorizer.transform([job_text])
+
+        resume_job_similarity = cosine_similarity(resume_tfidf, job_tfidf)[0][0] * 100
+        match_percentage = round(resume_job_similarity, 2)
+
+        # Find suggested jobs
+        similarity_scores = cosine_similarity(resume_tfidf, tfidf_matrix)
+        top_jobs_indices = similarity_scores.argsort()[0][::-1][:5]
+        suggested_jobs = df.iloc[top_jobs_indices][['Job Title', 'Job Description']]
+
+        return render_template('helper_result.html', resume_text=resume_text, job_text=job_text, match_percentage=match_percentage, suggested_jobs=suggested_jobs.to_dict('records'))
+
+
 
 
 if __name__ == '__main__':
